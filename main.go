@@ -10,15 +10,8 @@ import (
 )
 
 func usage() {
-	fmt.Println(`Usage: execl2csv [options] [execelName]
-  -ec string
-        字段包围符 (default ")
-  -ft string
-        字段分割符 (default ,)
-  -lt string
-        行分隔符 (default \r\n)
-  -o string
-        csv保存路径`)
+	fmt.Println("Usage: execl2csv [options] [execelName]")
+	flag.PrintDefaults()
 }
 
 func main() {
@@ -26,6 +19,7 @@ func main() {
 	var ec = flag.String("ec", "\"", "字段包围符")
 	var lt = flag.String("lt", "\r\n", "行分隔符")
 	var out = flag.String("o", "", "csv保存路径")
+	var nh = flag.String("nh", "0", "是否忽略表头,默认忽略,1表示忽略，0表示不忽略")
 	flag.Usage = usage
 	flag.Parse()
 	args := flag.Args()
@@ -44,18 +38,21 @@ func main() {
 
 	for _, name := range f.GetSheetMap() {
 		s1 := ""
-		cols, err := f.GetCols(name)
+		rows, err := f.GetRows(name)
 		if err != nil {
 			log.Println("获取sheet数据失败", err.Error())
 			return
 		}
-		for _, col := range cols {
+		for row_id, row := range rows {
+			if *nh == "1" && row_id == 0 {
+				continue
+			}
 			s2 := ""
-			for _, rowCell := range col {
+			for _, cell := range row {
 				if s2 == "" {
-					s2 = fmt.Sprint(*ec, rowCell, *ec)
+					s2 = fmt.Sprint(*ec, cell, *ec)
 				} else {
-					s2 += fmt.Sprint(*ft, *ec, rowCell, *ec)
+					s2 += fmt.Sprint(*ft, *ec, cell, *ec)
 				}
 			}
 			s1 += fmt.Sprint(s2, *lt)
