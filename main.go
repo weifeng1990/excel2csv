@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -57,7 +58,8 @@ func main() {
 			}
 			s1 += fmt.Sprint(s2, *lt)
 		}
-		outfile, err := os.OpenFile(*out+name+".csv", os.O_WRONLY|os.O_CREATE, 0644)
+		csvpath := path.Join(*out, name+".csv")
+		outfile, err := os.OpenFile(csvpath, os.O_WRONLY|os.O_CREATE, 0644)
 		defer outfile.Close()
 		if err != nil {
 			log.Println("打开输出文件失败", err.Error())
