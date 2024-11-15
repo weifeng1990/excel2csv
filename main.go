@@ -17,7 +17,7 @@ func usage() {
 
 func main() {
 	var ft = flag.String("ft", ",", "字段分割符")
-	var ec = flag.String("ec", "\"", "字段包围符")
+	var ec = flag.String("ec", "", "字段包围符")
 	var lt = flag.String("lt", "\r\n", "行分隔符")
 	var out = flag.String("o", "", "csv保存路径")
 	var nh = flag.String("nh", "0", "是否忽略表头,默认忽略,1表示忽略，0表示不忽略")
@@ -36,7 +36,6 @@ func main() {
 		log.Println("打开", input, "失败：", err.Error())
 		return
 	}
-
 	for _, name := range f.GetSheetMap() {
 		s1 := ""
 		rows, err := f.GetRows(name)
@@ -44,12 +43,21 @@ func main() {
 			log.Println("获取sheet数据失败", err.Error())
 			return
 		}
+		table_width := 0
 		for row_id, row := range rows {
+			if row_id == 0 {
+				table_width = len(row)
+			}
 			if *nh == "1" && row_id == 0 {
 				continue
 			}
 			s2 := ""
-			for _, cell := range row {
+
+			for i := 0; i < table_width; i++ {
+				cell := ""
+				if i < len(row) {
+					cell = row[i]
+				}
 				if s2 == "" {
 					s2 = fmt.Sprint(*ec, cell, *ec)
 				} else {
