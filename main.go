@@ -130,7 +130,7 @@ func main() {
 			log.Println("获取sheet数据失败", err.Error())
 			return
 		}
-		cols, err := f.GetCols("Sheet1")
+		cols, err := f.GetCols(name)
 		if err != nil {
 			log.Println("获取sheet数据失败", err.Error())
 			return
